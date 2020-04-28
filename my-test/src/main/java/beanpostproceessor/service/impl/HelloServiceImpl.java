@@ -1,4 +1,4 @@
-package beanpostproceessor.impl;
+package beanpostproceessor.service.impl;
 
 import beanpostproceessor.service.HelloService;
 import beanpostproceessor.service.NameInit;
