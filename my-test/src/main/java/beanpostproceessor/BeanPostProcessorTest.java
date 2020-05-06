@@ -6,6 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * BeanPostProcessor测试类
+ * 在bean实例化的前后执行特定的方法：before；after
  *
  *
  * @author cy
