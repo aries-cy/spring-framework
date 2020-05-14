@@ -52,15 +52,32 @@ final class PostProcessorRegistrationDelegate {
 	}
 
 
+	/**
+	 * cy
+	 * @param beanFactory beanFactory
+	 * @param beanFactoryPostProcessors beanFactoryPostProcessor提供了beanFactory，可以修改、添加bean的一些属性
+	 *  任意bean实例化之前执行，针对beanFactory来建设。经典案例：configurationClassPostProcessor，针对配置类加上cglib代理
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		/**
+		 * 已经执行过的 BeanDefinitionRegistryPostProcessors 的名称
+		 */
 		Set<String> processedBeans = new HashSet<>();
 
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			/**
+			 * cy
+			 * BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor的子类
+			 * 将不同类型分别放到两个list
+			 */
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			/**
+			 * 存放自定义的BeanDefinitionRegistryPostProcessor
+			 */
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
@@ -79,9 +96,19 @@ final class PostProcessorRegistrationDelegate {
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
+			/**
+			 * cy
+			 * 又定义了一个BeanDefinitionRegistryPostProcessor的list
+			 * 存放Spring内部实现了BeanDefinitionRegistryPostProcessor的类>>>>ConfigurationClassPostProcessor
+			 */
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			/**
+			 * cy
+			 * 根据类型获取 BeanDefinitionRegistryPostProcessor
+			 * 这里是获取Spring内部的 BeanDefinitionRegistryPostProcessor 并执行
+			 */
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -90,12 +117,21 @@ final class PostProcessorRegistrationDelegate {
 					processedBeans.add(ppName);
 				}
 			}
+			//排序--不重要
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
+			/**
+			 * cy
+			 * 执行Spring内部的 BeanDefinitionRegistryPostProcessor，即 ConfigurationClassPostProcessor 并执行
+			 */
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+			/**
+			 * cy
+			 * 获取 实现了 BeanDefinitionRegistryPostProcessor 的类
+			 */
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -122,11 +158,19 @@ final class PostProcessorRegistrationDelegate {
 				}
 				sortPostProcessors(currentRegistryProcessors, beanFactory);
 				registryProcessors.addAll(currentRegistryProcessors);
+				/**
+				 * 执行自定义的 BeanDefinitionRegistryPostProcessor
+				 */
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 				currentRegistryProcessors.clear();
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			/**
+			 * cy
+			 * 先执行Spring内部 的 BeanDefinitionRegistryPostProcessor ，再执行 自定义的 BeanFactoryPostProcessor
+			 * 先执行 BeanDefinitionRegistryPostProcessor ，后执行 BeanFactoryPostProcessor
+			 */
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}

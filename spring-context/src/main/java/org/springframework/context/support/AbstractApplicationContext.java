@@ -525,9 +525,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				/**
+				 * cy
+				 * spring中并没有具体去实现postProcessBeanFactory方法，是提供给想要实现BeanPostProcessor的三方框架使用的
+				 */
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				/**
+				 * cy
+				 * 主要是在Spring的beanFactory初始化的过程中去做一些事情
+				 * 怎么来做这些事情？>>>委托了多个实现了BeanDefinitionRegistryPostProcessor或者BeanFactoryPostProcessor接口的类来做这些事情
+				 * 有自定义的，也有Spring内部的，其中 ConfigurationClassPostProcessor 就是Spring内部的BeanDefinitionRegistryPostProcessor
+				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.

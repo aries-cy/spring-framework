@@ -63,6 +63,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		/** cy
+		 * 父类构造方法
+		 * 创建一个读取注解的bean定义读取器
+		 * 什么是beanDefinition：描述了具￿有属性的bean实例
+		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
@@ -84,7 +89,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		//先调用父类的构造方法，再调用自己的构造方法
 		this();
+		//将componentClasses注册到容器中
+		/**
+		 * 可以注册一个配置类，也可以单独注册一个类
+		 */
 		register(componentClasses);
 		refresh();
 	}
