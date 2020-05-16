@@ -68,6 +68,10 @@ public class AnnotatedBeanDefinitionReader {
 	 * @see #setEnvironment(Environment)
 	 */
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
+		/**
+		 * cy
+		 * 在reader的构造器中，去注册了Spring的几个内部bean，包括 ConfigurationClassPostProcessor
+		 */
 		this(registry, getOrCreateEnvironment(registry));
 	}
 
