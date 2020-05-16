@@ -112,9 +112,16 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
+		/**
+		 * 检查是否是@Configuration注解，如果是，设置Full标识
+		 */
 		if (isFullConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
+		/**
+		 * 检查是否是Lite类型的注解，如果是，设置Lite标识
+		 * @Component @ComponentScan  @Import  @ImportResource
+		 */
 		else if (isLiteConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}

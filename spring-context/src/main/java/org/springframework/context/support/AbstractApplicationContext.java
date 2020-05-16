@@ -528,6 +528,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				/**
 				 * cy
 				 * spring中并没有具体去实现postProcessBeanFactory方法，是提供给想要实现BeanPostProcessor的三方框架使用的
+				 * 允许上下文中 子类对bean工厂的后置处理
 				 */
 				postProcessBeanFactory(beanFactory);
 
