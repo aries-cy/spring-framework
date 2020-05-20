@@ -237,6 +237,11 @@ class ConfigurationClassParser {
 		}
 
 		// Recursively process the configuration class and its superclass hierarchy.
+		/**
+		 * cy
+		 * 在解析之前会把转换数据结构，转换为：SourceClass
+		 * 然后递归调用（看当前这个注解类有没有被别的类import）
+		 */
 		SourceClass sourceClass = asSourceClass(configClass);
 		do {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass);
@@ -260,6 +265,9 @@ class ConfigurationClassParser {
 
 		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
 			// Recursively process any member (nested) classes first
+			/**
+			 * 处理内部类
+			 */
 			processMemberClasses(configClass, sourceClass);
 		}
 
@@ -283,9 +291,17 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
+				/**
+				 * 扫描普通类
+				 * 这里出所有的@Component
+				 */
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
+				/**
+				 * cy
+				 * 检查扫描出来的类是否含有Configuration
+				 */
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
@@ -299,6 +315,9 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @Import annotations
+		/**
+		 * 处理 @Import  @ImportSelector  @ImportBeanDefinitionRegistrar
+		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
 		// Process any @ImportResource annotations

@@ -74,6 +74,9 @@ class ComponentScanAnnotationParser {
 
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
+		/**
+		 * new 了一个scanner
+		 */
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
@@ -103,13 +106,18 @@ class ComponentScanAnnotationParser {
 				scanner.addExcludeFilter(typeFilter);
 			}
 		}
-
+		/**
+		 * 默认为false
+		 */
 		boolean lazyInit = componentScan.getBoolean("lazyInit");
 		if (lazyInit) {
 			scanner.getBeanDefinitionDefaults().setLazyInit(true);
 		}
 
 		Set<String> basePackages = new LinkedHashSet<>();
+		/**
+		 * 拿到包的名字
+		 */
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
 			String[] tokenized = StringUtils.tokenizeToStringArray(this.environment.resolvePlaceholders(pkg),
@@ -129,6 +137,9 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		/**
+		 * 去扫描，并注册到Spring的容器中
+		 */
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 
