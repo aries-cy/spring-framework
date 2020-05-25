@@ -572,9 +572,16 @@ class ConfigurationClassParser {
 			this.importStack.push(configClass);
 			try {
 				for (SourceClass candidate : importCandidates) {
+					/**
+					 * cy
+					 * 如果是 @ImportSelector 类型的注解，得到注解中引入的类 中方法返回的字符串数组，通过反射的方式，得到对象，并注入到Spring容器中
+					 */
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
+						/**
+						 * 反射实现一个对象
+						 */
 						ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
 						ParserStrategyUtils.invokeAwareMethods(
 								selector, this.environment, this.resourceLoader, this.registry);
@@ -584,6 +591,9 @@ class ConfigurationClassParser {
 						else {
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
+							/**
+							 * 递归调用，注解中引入的类中可能还有 @Import 注解
+							 */
 							processImports(configClass, currentSourceClass, importSourceClasses, false);
 						}
 					}
