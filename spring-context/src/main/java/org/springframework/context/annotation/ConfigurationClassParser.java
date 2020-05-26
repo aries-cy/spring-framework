@@ -574,7 +574,7 @@ class ConfigurationClassParser {
 				for (SourceClass candidate : importCandidates) {
 					/**
 					 * cy
-					 * 如果是 @ImportSelector 类型的注解，得到注解中引入的类 中方法返回的字符串数组，通过反射的方式，得到对象，并注入到Spring容器中
+					 * 如果是 @ImportSelector 类型的注解，得到注解中引入的类 中方法返回的字符串数组，通过反射的方式，得到对象
 					 */
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
@@ -592,7 +592,9 @@ class ConfigurationClassParser {
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
 							/**
+							 * cy
 							 * 递归调用，注解中引入的类中可能还有 @Import 注解
+							 * 如果里面没有 @Import  ，进入else 执行 processConfigurationClass(candidate.asConfigClass(configClass));
 							 */
 							processImports(configClass, currentSourceClass, importSourceClasses, false);
 						}
@@ -610,6 +612,12 @@ class ConfigurationClassParser {
 					else {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
+						/**
+						 * cy
+						 * 加入到 importStack 后调用 processConfigurationClass 进行处理
+						 * processConfigurationClass 主要就是把类放到 configurationClasses
+						 * configurationClasses 是一个集合，会在后面拿出来解析成 beanDefinition 继而注册到Spring容器中
+						 */
 						this.importStack.registerImport(
 								currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
 						processConfigurationClass(candidate.asConfigClass(configClass));
