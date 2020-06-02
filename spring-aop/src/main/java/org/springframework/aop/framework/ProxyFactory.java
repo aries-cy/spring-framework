@@ -107,6 +107,10 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * @return the proxy object
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
+		/**
+		 * createAopProxy() 返回AOPProxy 该接口有3个牛逼的实现
+		 * 这里返回的是 JDK 动态代理
+		 */
 		return createAopProxy().getProxy(classLoader);
 	}
 
