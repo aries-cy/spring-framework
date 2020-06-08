@@ -810,6 +810,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	/**
+	 * cy
+	 * 开始做对象的实例化
+	 * @throws BeansException
+	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isTraceEnabled()) {
@@ -820,14 +825,18 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 		/**
 		 * 拿到所有要初始化的类
+		 * 所有bean的名字
 		 */
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
+		/**
+		 * 触发所有非延迟加载单例 bean 的初始化
+		 */
 		for (String beanName : beanNames) {
 			/**
 			 * 通过名字得到 bd
-			 * 这行代码很重要
+			 * 合并父BeanDefinition
 			 */
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			/**

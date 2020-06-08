@@ -496,6 +496,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Prepare method overrides.
 		try {
+			/**
+			 * 处理lookup-Method 和replace-Method，统称为overrides
+			 */
 			mbdToUse.prepareMethodOverrides();
 		}
 		catch (BeanDefinitionValidationException ex) {
@@ -505,6 +508,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			/**
+			 * 里面有个后置处理器，如果这个后置处理器能返回一个bean，就直接返回了，不再进行后面的装配，不理会里面的依赖
+			 * InstantiationAwareBeanPostProcessor
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -1177,11 +1184,23 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
+		/**
+		 * 如果 FactoryMethodName 不为空，通过 instantiateUsingFactoryMethod() 去实例化对象
+		 * 通过xml去指定  FactoryMethodName
+		 * @Bean  当是static的时候，相当于是给对象配置了一个 FactoryMethodName
+		 *   不是static的时候， 是uniqueFactoryMethodName
+		 *   具体看ConfigurationClassPostProcessor
+		 */
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
 		// Shortcut when re-creating the same bean...
+		/**
+		 * 从Spring的原始注释中，可以知道这是一个Shortcut（快捷方式），什么意思呢？
+		 * 当多次构建同一bean时，可以使用这个 Shortcut
+		 * 也就是不需要再次推断使用哪种方式构造bean
+		 */
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
@@ -1202,7 +1221,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Candidate constructors for autowiring?
+		/**
+		 * 由后置处理器（SmartInstantiationAwareBeanPostProcessor）决定 返回 有参数的 构造方法
+		 * 如果只有一个无参构造方法，这里返回为 null
+		 */
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
+		/**
+		 * 自动装配模型 !=  自动装配技术
+		 * 自动装配模型  默认为 0
+		 */
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
 			return autowireConstructor(beanName, mbd, ctors, args);
@@ -1215,6 +1242,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// No special handling: simply use no-arg constructor.
+		/**
+		 * 通过默认的无参构造方法进行初始化
+		 */
 		return instantiateBean(beanName, mbd);
 	}
 
@@ -1315,6 +1345,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			else {
 				/**
 				 * 选择了一个生成策略，底层使用的反射
+				 * 默认情况下，是得到一个反射的实例化策略
 				 */
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
