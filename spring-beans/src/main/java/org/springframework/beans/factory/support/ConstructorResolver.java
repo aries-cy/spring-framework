@@ -120,6 +120,11 @@ class ConstructorResolver {
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 		this.beanFactory.initBeanWrapper(bw);
 
+		/**
+		 * 待使用的构造方法
+		 * 待使用的参数类型
+		 * 待使用的参数
+		 */
 		Constructor<?> constructorToUse = null;
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
@@ -178,6 +183,9 @@ class ConstructorResolver {
 					mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
 			ConstructorArgumentValues resolvedValues = null;
 
+			/**
+			 * 最小参数个数
+			 */
 			int minNrOfArgs;
 			if (explicitArgs != null) {
 				minNrOfArgs = explicitArgs.length;
@@ -188,6 +196,12 @@ class ConstructorResolver {
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 			}
 
+			/**
+			 *  对构造方法进行排序
+			 * 	public和参数多个排在前面
+			 * 	方法修饰词
+			 * 	参数个数
+			 */
 			AutowireUtils.sortConstructors(candidates);
 			int minTypeDiffWeight = Integer.MAX_VALUE;
 			Set<Constructor<?>> ambiguousConstructors = null;
@@ -196,11 +210,18 @@ class ConstructorResolver {
 			for (Constructor<?> candidate : candidates) {
 				Class<?>[] paramTypes = candidate.getParameterTypes();
 
+				/**
+				 * 如果已经选择了一个构造方法，且下一次遍历的构造方法的参数数量少于这个构造方法
+				 * 那么就可以直接认为这个构造方法是合适的构造方法
+				 */
 				if (constructorToUse != null && argsToUse != null && argsToUse.length > paramTypes.length) {
 					// Already found greedy constructor that can be satisfied ->
 					// do not look any further, there are only less greedy constructors left.
 					break;
 				}
+				/**
+				 * 如果该构造方法的参数的数量小于最小参数数量，那么直接排除解析下一个构造方法
+				 */
 				if (paramTypes.length < minNrOfArgs) {
 					continue;
 				}
@@ -215,6 +236,9 @@ class ConstructorResolver {
 								paramNames = pnd.getParameterNames(candidate);
 							}
 						}
+						/**
+						 * 拿到参数
+						 */
 						argsHolder = createArgumentArray(beanName, mbd, resolvedValues, bw, paramTypes, paramNames,
 								getUserDeclaredConstructor(candidate), autowiring, candidates.length == 1);
 					}
@@ -238,9 +262,17 @@ class ConstructorResolver {
 					argsHolder = new ArgumentsHolder(explicitArgs);
 				}
 
+				/**
+				 * 每个构造方法的差异值计算
+				 * 这个差异值会影响最终构造方法的选择
+				 * 这个是在参数数量和修饰词相同的时候会比较
+				 */
 				int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 						argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 				// Choose this constructor if it represents the closest match.
+				/**
+				 * 比较差异值选择更为合适的构造方法
+				 */
 				if (typeDiffWeight < minTypeDiffWeight) {
 					constructorToUse = candidate;
 					argsHolderToUse = argsHolder;
@@ -248,6 +280,10 @@ class ConstructorResolver {
 					minTypeDiffWeight = typeDiffWeight;
 					ambiguousConstructors = null;
 				}
+				/**
+				 * 如果差异值相同，那么这两个构造方法属于模糊构造方法
+				 * 会将他们记录在ambiguousConstructors集合中
+				 */
 				else if (constructorToUse != null && typeDiffWeight == minTypeDiffWeight) {
 					if (ambiguousConstructors == null) {
 						ambiguousConstructors = new LinkedHashSet<>();
