@@ -1,6 +1,7 @@
 package ioc;
 
 import ioc.config.IocConfiguration;
+import ioc.model.OrderService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -12,6 +13,7 @@ public class IocTest {
 
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(IocConfiguration.class);
+		OrderService order = (OrderService) context.getBean("order");
 		System.out.println("...");
 	}
 }

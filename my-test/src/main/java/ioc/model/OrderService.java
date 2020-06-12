@@ -1,5 +1,6 @@
 package ioc.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Component;
 @Component("order")
 public class OrderService {
 
-	public OrderService(String str){
-
-	}
+	@Autowired
+	UserService userService;
 
 }
