@@ -63,6 +63,8 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		/**
 		 * 检测bean中是否配置了 lookup-method 或者replace-method
 		 * 如果配置了，需要使用CGLIB构建bean对象
+		 * 如果有需要覆盖或者动态替换的方法则当然需要使用cglib进行动态代码，因为可以在创建代理的同时将动态方法织入类中
+		 * 但是如果没有需要动态改变的方法，为了方便直接反射就可以了
 		 */
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
@@ -92,6 +94,9 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			/**
+			 * 实例化bean
+			 */
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {
