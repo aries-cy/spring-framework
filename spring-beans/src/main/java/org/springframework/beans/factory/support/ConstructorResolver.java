@@ -129,22 +129,35 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		/**
+		 * explicitArgs通过getBean方法传入
+		 * 如果getBean方法调用的时候指定方法参数，那么直接使用
+		 */
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
 		else {
+			//如果在getBean方法调用的时候没有指定则尝试从配置文件中解析
 			Object[] argsToResolve = null;
+			// 尝试从缓存中获取
 			synchronized (mbd.constructorArgumentLock) {
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
 				if (constructorToUse != null && mbd.constructorArgumentsResolved) {
 					// Found a cached constructor...
+					// 从缓存中取
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
+						// 配置的构造函数参数
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}
 			}
+			// 如果缓存中存在
 			if (argsToResolve != null) {
+				/**
+				 * 解析参数类型，如给定方法的构造函数A(int, int)则通过此方法后就会把配置中的("1", "1")转换为(1, 1)
+				 * 缓存中的值可能是原始值也可能是最终值
+				 */
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve, true);
 			}
 		}
@@ -191,8 +204,17 @@ class ConstructorResolver {
 				minNrOfArgs = explicitArgs.length;
 			}
 			else {
+				/**
+				 * 提取配置文件中的配置的构造函数参数
+				 */
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
+				/**
+				 * 用于承载解析后的构造函数参数的值
+				 */
 				resolvedValues = new ConstructorArgumentValues();
+				/**
+				 * 能解析到的参数个数
+				 */
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 			}
 
@@ -217,6 +239,9 @@ class ConstructorResolver {
 				if (constructorToUse != null && argsToUse != null && argsToUse.length > paramTypes.length) {
 					// Already found greedy constructor that can be satisfied ->
 					// do not look any further, there are only less greedy constructors left.
+					/**
+					 * 如果已经找到选用的构造函数或者需要的参数个数小于当前的构造函数参数个数则终止，因为已经按照参数个数降序排列
+					 */
 					break;
 				}
 				/**
@@ -227,8 +252,14 @@ class ConstructorResolver {
 				}
 
 				ArgumentsHolder argsHolder;
+				/**
+				 * 有参数则根据值构造对应参数类型的参数
+				 */
 				if (resolvedValues != null) {
 					try {
+						/**
+						 * 注释上获取参数名称
+						 */
 						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length);
 						if (paramNames == null) {
 							ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
