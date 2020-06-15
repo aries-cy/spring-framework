@@ -575,7 +575,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		/**
-		 * 拿到原生对象，而不是代理对象
+		 * 拿到原生对象，而不是包装对象（BeanWrapper）
 		 */
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();

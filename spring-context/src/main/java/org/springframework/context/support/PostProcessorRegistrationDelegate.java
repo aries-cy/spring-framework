@@ -168,7 +168,7 @@ final class PostProcessorRegistrationDelegate {
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
 			/**
 			 * cy
-			 * 先执行Spring内部 的 BeanDefinitionRegistryPostProcessor ，再执行 自定义的 BeanFactoryPostProcessor
+			 * 先执行Spring内部 的 BeanDefinitionRegistryPostProcessor ，再执行 自定义的 BeanDefinitionRegistryPostProcessor
 			 * 先执行 BeanDefinitionRegistryPostProcessor ，后执行 BeanFactoryPostProcessor
 			 */
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
