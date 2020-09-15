@@ -13,7 +13,7 @@ public interface UserMapper {
 	 * 查询user
 	 */
 	@Select("select * from user limit 1")
-	void queryUser();
+	String queryUser();
 
 	/**
 	 * 删除user

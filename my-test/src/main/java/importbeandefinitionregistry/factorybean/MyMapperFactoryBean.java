@@ -51,6 +51,6 @@ public class MyMapperFactoryBean  implements FactoryBean ,InvocationHandler{
 		String sql = method.getDeclaredAnnotation(Select.class).value()[0];
 		//打印sql
 		System.out.println(sql);
-		return null;
+		return "哈哈哈哈";
 	}
 }
