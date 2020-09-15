@@ -1,5 +1,6 @@
 package aop.aspect;
 
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -23,5 +24,10 @@ public class AspectCy {
 	@Before("pintCut()")
 	public void before(){
 		System.out.println("proxy before...");
+	}
+
+	@After("pintCut()")
+	public void after(){
+		System.out.println("proxy after...");
 	}
 }
