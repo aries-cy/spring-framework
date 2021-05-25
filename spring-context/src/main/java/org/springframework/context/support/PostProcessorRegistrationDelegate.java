@@ -84,6 +84,10 @@ final class PostProcessorRegistrationDelegate {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
+					/**
+					 * 这里执行工厂后置处理里的方法，这里当做是执行 ConfigurationClassPostProcessor#postProcessBeanDefinitionRegistry()方法
+					 * 当这个方法执行完成后，自定义的工厂后置处理器、以及spring中所有的bean都会扫描完成
+					 */
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
 				}
